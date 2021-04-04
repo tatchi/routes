@@ -1,2 +1,8 @@
+(executable
+ (modules main)
+ (name main)
+ (public_name main))
+
 (library
+ (modules routes)
  (public_name routes))
