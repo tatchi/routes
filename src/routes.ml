@@ -201,7 +201,10 @@ let parse_route path handler params =
     =
     fun t f seen s ->
     match t with
-    | End -> FullMatch [ f ]
+    | End ->
+      (match s with
+       | [] | [ "" ] -> FullMatch [ f ]
+       | _ -> NoMatch)
     | Wildcard -> FullMatch [ f { Parts.prefix = List.rev seen; matched = s } ]
     | Match (x, fmt) ->
       (match s with
