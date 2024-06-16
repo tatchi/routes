@@ -59,7 +59,7 @@ val bool : ('a, 'b) path -> (bool -> 'a, 'b) path
 val s : string -> ('a, 'b) path -> ('a, 'b) path
 
 (** [wildcard] matches all remaining path segments as a string. *)
-val wildcard : (Parts.t -> 'a, 'a) path
+(* val wildcard : (Parts.t -> 'a, 'a) path *)
 
 (** [nil] is used to end a sequence of path parameters. It can also be used to represent
     an empty route that can match "/" or "". *)
@@ -177,7 +177,7 @@ val one_of : 'b route list -> 'b router
 val map : ('a -> 'b) -> 'a route -> 'b route
 
 type 'a match_result =
-  | FullMatch of 'a
+  | FullMatch of 'a list
   | NoMatch
 
 (** [match'] accepts a router and the target url to match. *)
