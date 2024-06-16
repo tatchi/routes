@@ -197,25 +197,22 @@ type 'a match_result =
 
 let parse_route path handler params =
   let rec match_target
-    : type a b. (a, b) path -> a -> string list -> string list -> b list
+    : type a b. (a, b) path -> a -> string list -> string list -> b match_result
     =
     fun t f seen s ->
     match t with
-    | End ->
-      (match s with
-       | [] | [ "" ] -> [ f ]
-       | _ -> [ f ])
-    | Wildcard -> [ f { Parts.prefix = List.rev seen; matched = s } ]
+    | End -> FullMatch [ f ]
+    | Wildcard -> FullMatch [ f { Parts.prefix = List.rev seen; matched = s } ]
     | Match (x, fmt) ->
       (match s with
        | x' :: xs when x = x' -> match_target fmt f (x' :: seen) xs
-       | _ -> [])
+       | _ -> NoMatch)
     | Conv ({ from_; _ }, fmt) ->
       (match s with
-       | [] -> []
+       | [] -> NoMatch
        | x :: xs ->
          (match from_ x with
-          | None -> []
+          | None -> NoMatch
           | Some x' -> match_target fmt (f x') (x :: seen) xs))
   in
   match_target path handler [] params
@@ -243,11 +240,11 @@ let map f (Route (r, h, g)) = Route (r, h, fun x -> f (g x))
 
 let rec match_routes target routes acc =
   match routes with
-  | [] -> acc
+  | [] -> FullMatch acc
   | Route (r, h, f) :: rs ->
     (match parse_route r h target with
-     | [] -> match_routes target rs acc
-     | r ->
+     | NoMatch -> match_routes target rs acc
+     | FullMatch r ->
        let r = List.map f r in
        match_routes target rs (r @ acc))
 ;;
@@ -255,10 +252,7 @@ let rec match_routes target routes acc =
 let match' router ~target =
   let target = Util.split_path target in
   let routes = PatternTrie.feed_params router target in
-  let res = match_routes target routes [] in
-  match res with
-  | [] -> NoMatch
-  | l -> FullMatch l
+  match_routes target routes []
 ;;
 
 let ( /~ ) m path = m path
