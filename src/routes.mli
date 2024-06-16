@@ -8,8 +8,7 @@ type ('a, 'b) path
 (** [route] is a combination of a path sequence, with a function that will be called on a
     successful match. When a path sequence matches, the patterns that are extracted are
     forwarded to said function with the types that the user defined. Note that because of
-    {{:https://caml.inria.fr/pub/docs/manual-ocaml/polymorphism.html#ss:valuerestriction}
-      value restriction}, the route definitions will be assigned a weak type by the
+    {{:https://caml.inria.fr/pub/docs/manual-ocaml/polymorphism.html#ss:valuerestriction} value restriction}, the route definitions will be assigned a weak type by the
     compiler. This causes problems if one intends to re-use the same route definition in
     multiple contexts, like using a single definition for both matching a target url, and
     serializing to use in a client call. To avoid such problems one can use eta-expansion
@@ -179,7 +178,6 @@ val map : ('a -> 'b) -> 'a route -> 'b route
 
 type 'a match_result =
   | FullMatch of 'a
-  | MatchWithTrailingSlash of 'a
   | NoMatch
 
 (** [match'] accepts a router and the target url to match. *)
